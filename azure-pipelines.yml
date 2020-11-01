@@ -10,4 +10,5 @@ steps:
 - task: WhiteSource@20
   inputs:
     projectName: 'AZDO_WebGoat'
-    configuration: 'projectTag=Policy:Dist'
+    configuration: npm.resolveDependencies=true
+    
