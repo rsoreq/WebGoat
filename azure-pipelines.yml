@@ -11,4 +11,5 @@ steps:
   inputs:
     projectName: 'AZDO_WebGoat'
     configuration: npm.resolveDependencies=true
+    configuration: maven.resolveDependencies=true
     
