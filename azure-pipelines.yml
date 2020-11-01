@@ -10,6 +10,6 @@ steps:
 - task: WhiteSource@20
   inputs:
     projectName: 'AZDO_WebGoat'
-    configuration: npm.resolveDependencies=true
-    configuration: maven.resolveDependencies=true
-    
+    configuration: 
+        maven.resolveDependencies=true
+        npm.resolveDependencies=true
