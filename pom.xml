@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.1.0</version>
+    <version>3.1.5</version>
   </parent>
 
   <groupId>org.owasp.webgoat</groupId>
   <artifactId>webgoat</artifactId>
-  <version>2023.5-SNAPSHOT</version>
+  <version>2023.9-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>WebGoat</name>
@@ -110,29 +110,28 @@
   <properties>
     <!-- Shared properties with plugins and version numbers across submodules-->
     <asciidoctorj.version>2.5.10</asciidoctorj.version>
-    <!-- Upgrading needs UI work in WebWolf -->
-    <bootstrap.version>3.3.7</bootstrap.version>
+    <bootstrap.version>5.3.2</bootstrap.version>
     <cglib.version>3.3.0</cglib.version>
     <!-- do not update necessary for lesson -->
-    <checkstyle.version>3.3.0</checkstyle.version>
+    <checkstyle.version>3.3.1</checkstyle.version>
     <commons-collections.version>3.2.1</commons-collections.version>
-    <commons-io.version>2.13.0</commons-io.version>
+    <commons-io.version>2.15.1</commons-io.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <commons-text.version>1.10.0</commons-text.version>
-    <guava.version>32.1.1-jre</guava.version>
-    <jacoco.version>0.8.10</jacoco.version>
+    <guava.version>32.1.3-jre</guava.version>
+    <jacoco.version>0.8.11</jacoco.version>
     <java.version>17</java.version>
     <jaxb.version>2.3.1</jaxb.version>
     <jjwt.version>0.9.1</jjwt.version>
     <jose4j.version>0.9.3</jose4j.version>
     <jquery.version>3.7.0</jquery.version>
-    <jsoup.version>1.16.1</jsoup.version>
+    <jsoup.version>1.17.2</jsoup.version>
     <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
     <maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
     <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
     <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
     <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
-    <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>3.2.1</maven-surefire-plugin.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <pmd.version>3.15.0</pmd.version>
@@ -140,10 +139,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <thymeleaf.version>3.1.1.RELEASE</thymeleaf.version>
-    <webdriver.version>5.3.3</webdriver.version>
-    <webgoat.port>8080</webgoat.port>
+    <webdriver.version>5.6.3</webdriver.version>
+    <webgoat.context>/</webgoat.context>
+    <webgoat.sslenabled>false</webgoat.sslenabled>
     <webjars-locator-core.version>0.53</webjars-locator-core.version>
-    <webwolf.port>9090</webwolf.port>
+    <webwolf.context>/</webwolf.context>
     <wiremock.version>2.27.2</wiremock.version>
     <xml-resolver.version>1.2</xml-resolver.version>
     <xstream.version>1.4.5</xstream.version>
@@ -163,7 +163,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
-        <version>1.3</version>
+        <version>1.4.0</version>
       </dependency>
       <dependency>
         <groupId>org.asciidoctor</groupId>
@@ -260,7 +260,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.23.0</version>
+        <version>1.25.0</version>
       </dependency>
       <dependency>
         <groupId>org.jruby</groupId>
@@ -326,6 +326,10 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-client</artifactId>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf.extras</groupId>
@@ -508,10 +512,19 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
+          <environmentVariables>
+            <WEBGOAT_SSLENABLED>${webgoat.sslenabled}</WEBGOAT_SSLENABLED>
+            <WEBGOAT_HOST>127.0.0.1</WEBGOAT_HOST>
+            <WEBGOAT_PORT>${webgoat.port}</WEBGOAT_PORT>
+            <WEBGOAT_CONTEXT>${webgoat.context}</WEBGOAT_CONTEXT>
+            <WEBWOLF_HOST>127.0.0.1</WEBWOLF_HOST>
+            <WEBWOLF_PORT>${webwolf.port}</WEBWOLF_PORT>
+            <WEBWOLF_CONTEXT>${webwolf.context}</WEBWOLF_CONTEXT>
+          </environmentVariables>
           <systemPropertyVariables>
             <logback.configurationFile>${basedir}/src/test/resources/logback-test.xml</logback.configurationFile>
           </systemPropertyVariables>
-          <argLine>-Xmx512m -Dwebgoatport=${webgoat.port} -Dwebwolfport=${webwolf.port}</argLine>
+          <argLine>-Xmx512m</argLine>
           <includes>org/owasp/webgoat/*Test</includes>
         </configuration>
         <executions>
@@ -534,6 +547,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
+          <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
           <argLine>--add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED
           --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED
           --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED
@@ -551,7 +565,6 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>${checkstyle.version}</version>
         <configuration>
-          <encoding>UTF-8</encoding>
           <consoleOutput>true</consoleOutput>
           <failsOnError>true</failsOnError>
           <configLocation>config/checkstyle/checkstyle.xml</configLocation>
@@ -562,7 +575,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.38.0</version>
+        <version>2.41.1</version>
         <configuration>
           <formats>
             <format>
@@ -680,16 +693,15 @@
                   <portNames>
                     <portName>webgoat.port</portName>
                     <portName>webwolf.port</portName>
-                    <portName>jmxPort</portName>
                   </portNames>
                 </configuration>
               </execution>
             </executions>
           </plugin>
           <plugin>
-            <groupId>com.bazaarvoice.maven.plugins</groupId>
+            <groupId>org.honton.chas</groupId>
             <artifactId>process-exec-maven-plugin</artifactId>
-            <version>0.9</version>
+            <version>0.9.2</version>
             <executions>
               <execution>
                 <id>start-jar</id>
@@ -697,8 +709,18 @@
                   <goal>start</goal>
                 </goals>
                 <phase>pre-integration-test</phase>
+
                 <configuration>
                   <workingDir>${project.build.directory}</workingDir>
+                  <environment>
+                    <WEBGOAT_SSLENABLED>${webgoat.sslenabled}</WEBGOAT_SSLENABLED>
+                    <WEBGOAT_HOST>127.0.0.1</WEBGOAT_HOST>
+                    <WEBGOAT_PORT>${webgoat.port}</WEBGOAT_PORT>
+                    <WEBGOAT_CONTEXT>${webgoat.context}</WEBGOAT_CONTEXT>
+                    <WEBWOLF_HOST>127.0.0.1</WEBWOLF_HOST>
+                    <WEBWOLF_PORT>${webwolf.port}</WEBWOLF_PORT>
+                    <WEBWOLF_CONTEXT>${webwolf.context}</WEBWOLF_CONTEXT>
+                  </environment>
                   <arguments>
                     <argument>java</argument>
                     <argument>-jar</argument>
@@ -706,8 +728,6 @@
                     <argument>-Dwebgoat.server.directory=${java.io.tmpdir}/webgoat_${webgoat.port}</argument>
                     <argument>-Dwebgoat.user.directory=${java.io.tmpdir}/webgoat_${webgoat.port}</argument>
                     <argument>-Dspring.main.banner-mode=off</argument>
-                    <argument>-Dwebgoat.port=${webgoat.port}</argument>
-                    <argument>-Dwebwolf.port=${webwolf.port}</argument>
                     <argument>--add-opens</argument>
                     <argument>java.base/java.lang=ALL-UNNAMED</argument>
                     <argument>--add-opens</argument>
@@ -733,7 +753,6 @@
                     <argument>${project.build.directory}/webgoat-${project.version}.jar</argument>
                   </arguments>
                   <waitForInterrupt>false</waitForInterrupt>
-                  <healthcheckUrl>http://localhost:${webgoat.port}/WebGoat/actuator/health</healthcheckUrl>
                 </configuration>
               </execution>
               <execution>
@@ -758,7 +777,6 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>6.5.1</version>
             <configuration>
               <failBuildOnCVSS>7</failBuildOnCVSS>
               <skipProvidedScope>false</skipProvidedScope>
@@ -807,7 +825,6 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>${jacoco.version}</version>
             <executions>
               <execution>
                 <id>before-unit-test</id>

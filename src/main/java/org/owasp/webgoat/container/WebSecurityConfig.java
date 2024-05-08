@@ -30,6 +30,7 @@
  */
 package org.owasp.webgoat.container;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.owasp.webgoat.container.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /** Security configuration for WebGoat. */
 @Configuration
@@ -54,32 +58,53 @@ public class WebSecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.authorizeHttpRequests(
-        auth ->
-            auth.requestMatchers(
-                    "/css/**",
-                    "/images/**",
-                    "/js/**",
-                    "fonts/**",
-                    "/plugins/**",
-                    "/registration",
-                    "/register.mvc",
-                    "/actuator/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated());
-    http.formLogin()
-        .loginPage("/login")
-        .defaultSuccessUrl("/welcome.mvc", true)
-        .usernameParameter("username")
-        .passwordParameter("password")
-        .permitAll();
-    http.logout().deleteCookies("JSESSIONID").invalidateHttpSession(true);
-    http.csrf().disable();
+    return http.authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(
+                        "/",
+                        "/favicon.ico",
+                        "/css/**",
+                        "/images/**",
+                        "/js/**",
+                        "fonts/**",
+                        "/plugins/**",
+                        "/registration",
+                        "/register.mvc")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .formLogin(
+            login ->
+                login
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/welcome.mvc", true)
+                    .usernameParameter("username")
+                    .passwordParameter("password")
+                    .permitAll())
+        .oauth2Login(
+            oidc -> {
+              oidc.defaultSuccessUrl("/login-oauth.mvc");
+              oidc.loginPage("/login");
+            })
+        .logout(logout -> logout.deleteCookies("JSESSIONID").invalidateHttpSession(true))
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(csrf -> csrf.disable())
+        .headers(headers -> headers.disable())
+        .exceptionHandling(
+            handling ->
+                handling.authenticationEntryPoint(new AjaxAuthenticationEntryPoint("/login")))
+        .build();
+  }
 
-    http.headers().cacheControl().disable();
-    http.exceptionHandling().authenticationEntryPoint(new AjaxAuthenticationEntryPoint("/login"));
-    return http.build();
+  private CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.addAllowedOriginPattern(CorsConfiguration.ALL);
+    configuration.setAllowedMethods(List.of(CorsConfiguration.ALL));
+    configuration.setAllowedHeaders(List.of(CorsConfiguration.ALL));
+    configuration.setAllowCredentials(true);
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
   }
 
   @Autowired
@@ -98,7 +123,6 @@ public class WebSecurityConfig {
     return authenticationConfiguration.getAuthenticationManager();
   }
 
-  @SuppressWarnings("deprecation")
   @Bean
   public NoOpPasswordEncoder passwordEncoder() {
     return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
