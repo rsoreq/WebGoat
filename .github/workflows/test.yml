@@ -26,7 +26,7 @@ jobs:
             -   name: Setup Python
                 uses: actions/setup-python@v5
                 with:
-                    python-version: '3.7'
+                    python-version: '3.13'
                     architecture: x64
             # Uses an action to add JDK 17 to the VM (and mvn?)
             -   name: set up JDK 17
