@@ -37,7 +37,7 @@ jobs:
                     architecture: x64
             #Uses an action to set up a cache using a certain key based on the hash of the dependencies
             -   name: Cache Maven packages
-                uses: actions/cache@v4.0.0
+                uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
                 with:
                     path: ~/.m2
                     key: ubuntu-latest-m2-${{ hashFiles('**/pom.xml') }}
