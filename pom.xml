@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.1.5</version>
+    <version>3.5.16</version>
   </parent>
 
   <groupId>org.owasp.webgoat</groupId>
@@ -118,14 +118,14 @@
     <commons-io.version>2.22.0</commons-io.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <commons-text.version>1.15.0</commons-text.version>
-    <guava.version>33.6.0-jre</guava.version>
+    <guava.version>33.7.1-jre</guava.version>
     <jacoco.version>0.8.11</jacoco.version>
     <java.version>17</java.version>
     <jaxb.version>2.3.1</jaxb.version>
     <jjwt.version>0.9.1</jjwt.version>
-    <jose4j.version>0.9.6</jose4j.version>
+    <jose4j.version>0.9.7</jose4j.version>
     <jquery.version>3.7.1</jquery.version>
-    <jsoup.version>1.22.2</jsoup.version>
+    <jsoup.version>1.23.2</jsoup.version>
     <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
     <maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
     <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
@@ -210,7 +210,7 @@
       <dependency>
         <groupId>com.auth0</groupId>
         <artifactId>java-jwt</artifactId>
-        <version>4.5.2</version>
+        <version>4.6.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
