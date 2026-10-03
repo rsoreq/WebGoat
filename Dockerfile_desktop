@@ -1,4 +1,4 @@
-FROM lscr.io/linuxserver/webtop:ubuntu-xfce
+FROM lscr.io/linuxserver/webtop:ubuntu-xfce@sha256:e839dc471a0e54b32066d84b4f081a212e50c43d0644351a0ae4c58eacaa37eb
 LABEL NAME = "WebGoat: A deliberately insecure Web Application"
 LABEL maintainer = "WebGoat team"
 
